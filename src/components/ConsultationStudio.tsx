@@ -26,6 +26,7 @@ import type {
 import { Capacitor } from '@capacitor/core';
 import { ResilientImage } from './ResilientImage';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+import { buildOfflineNlpProtocol } from '../utils/offlineNlpProtocol';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
 
@@ -117,14 +118,14 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
     if (!isOnline) {
       setErrorMessage(
-        'You appear to be offline. Reconnect to generate a live NLP consultation, or review your saved sessions in the Journal below.',
+        'You appear to be offline. Reconnect for live AI coaching, or start an offline on-device NLP protocol below.',
       );
       return;
     }
 
     if (Capacitor.isNativePlatform() && !API_BASE) {
       setErrorMessage(
-        'This APK does not have a live backend URL connected yet. Deploy your app in AI Studio to get a public URL, add it as the VITE_API_BASE_URL variable in GitHub, and rebuild—or tap "NLP Techniques" below to practice the guided exercises offline right now.',
+        'Live cloud AI coaching is not connected in this APK yet (VITE_API_BASE_URL is not set). You can still run an offline on-device NLP protocol right now.',
       );
       return;
     }
@@ -188,6 +189,40 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleUseOfflineProtocol = () => {
+    const trimmed = feelingText.trim();
+    if (trimmed.length < 4) {
+      setErrorMessage('Please describe how you feel or what challenge is on your mind right now.');
+      textareaRef.current?.focus();
+      return;
+    }
+
+    const offlineResponse = buildOfflineNlpProtocol({
+      feelingText: trimmed,
+      intensityBefore,
+      preferredTechnique: selectedTechnique,
+      contextArea,
+    });
+
+    const newEntry: JournalEntry = {
+      id: `nlp-offline-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      contextArea,
+      feelingText: trimmed,
+      intensityBefore,
+      intensityAfter: null,
+      response: offlineResponse,
+      followUps: [],
+    };
+
+    setErrorMessage(null);
+    onCreateEntry(newEntry);
+    setViewMode('guided');
+    window.setTimeout(() => {
+      interventionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleStepChange = (nextIdx: number) => {
@@ -443,10 +478,21 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
             {errorMessage && (
               <div
                 role="alert"
-                className="rounded-xl border border-[#C2410C]/30 bg-[#FFF7ED] px-4 py-3 text-sm text-[#9A3412] flex items-start gap-2.5"
+                className="rounded-xl border border-[#C2410C]/30 bg-[#FFF7ED] px-4 py-3.5 text-sm text-[#9A3412] space-y-3"
               >
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>{errorMessage}</span>
+                <div className="flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{errorMessage}</span>
+                </div>
+                {feelingText.trim().length >= 4 && (
+                  <button
+                    type="button"
+                    onClick={handleUseOfflineProtocol}
+                    className="min-h-[44px] px-4 py-2 rounded-xl bg-[#165B52] text-white text-xs sm:text-sm font-medium hover:bg-[#0F463F] transition-colors cursor-pointer"
+                  >
+                    Start Offline On-Device NLP Protocol
+                  </button>
+                )}
               </div>
             )}
 
