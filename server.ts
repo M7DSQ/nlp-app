@@ -279,6 +279,10 @@ Respond in 2–4 concise, clear paragraphs or bulleted adjustments suitable for 
     }
   });
 
+  app.use('/api', (_req: Request, res: Response) => {
+    res.status(404).json({ error: 'API route not found.' });
+  });
+
   if (isProduction) {
     const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));

@@ -368,3 +368,37 @@ export function buildOfflineNlpProtocol({
     ...chosen,
   };
 }
+
+export function buildOfflineFollowUpReply(
+  userMessage: string,
+  sessionTitle: string,
+): string {
+  const lower = userMessage.toLowerCase();
+
+  if (lower.includes('chest') || lower.includes('stomach') || lower.includes('shoulder') || lower.includes('tight') || lower.includes('tense') || lower.includes('anxious')) {
+    return [
+      'Notice exactly where that physical sensation sits and ask yourself: if it had a shape, temperature, and spin direction, how is it moving right now?',
+      'In NLP somatic submodality work, imagine slowing that spin down to half speed, cooling its temperature slightly, and moving the sensation two inches forward outside your body while lengthening your exhale to six seconds.',
+      'Once it softens even by one point, press your discreet physical anchor lightly for five seconds to reinforce the calmer baseline.',
+    ].join('\n\n');
+  }
+
+  if (lower.includes('office') || lower.includes('noisy') || lower.includes('meeting') || lower.includes('public') || lower.includes('commute') || lower.includes('work')) {
+    return [
+      `To adapt ${sessionTitle} discreetly in a busy workplace or meeting, keep your eyes open and shift into peripheral vision (softening your gaze slightly toward the edges of the room).`,
+      'Pair a silent four-second nasal inhale and six-second exhale with your finger-press anchor beneath the desk—no one around you will notice, and your nervous system receives an immediate down-regulation cue.',
+    ].join('\n\n');
+  }
+
+  if (lower.includes('still') || lower.includes('stuck') || lower.includes('hard') || lower.includes('voice') || lower.includes('doubt')) {
+    return [
+      'If the inner commentary is still loud, shift its auditory submodalities: notice where the voice seems to come from, then imagine moving that sound three metres behind you and turning its tone into a flat, bored monotone.',
+      'Then ask one Meta-Model question: "What is the single smallest factual step I can verify or complete in the next ten minutes?"',
+    ].join('\n\n');
+  }
+
+  return [
+    `To deepen ${sessionTitle} right now, pick the single step that felt most helpful and repeat it once more with a slower six-second exhale.`,
+    'Then re-rate your intensity below on the 1–10 scale—even a one- or two-point drop confirms your nervous system is shifting state.',
+  ].join('\n\n');
+}

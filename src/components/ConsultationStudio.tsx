@@ -26,9 +26,22 @@ import type {
 import { Capacitor } from '@capacitor/core';
 import { ResilientImage } from './ResilientImage';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
-import { buildOfflineNlpProtocol } from '../utils/offlineNlpProtocol';
+import {
+  buildOfflineFollowUpReply,
+  buildOfflineNlpProtocol,
+} from '../utils/offlineNlpProtocol';
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
+function normalizeApiBase(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return '';
+  try {
+    return new URL(trimmed).origin;
+  } catch {
+    return trimmed.replace(/\/+$/, '');
+  }
+}
+
+const API_BASE = normalizeApiBase(import.meta.env.VITE_API_BASE_URL ?? '');
 
 interface ConsultationStudioProps {
   selectedTechnique: TechniqueId;
@@ -55,6 +68,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
   const [intensityBefore, setIntensityBefore] = useState<number>(7);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
 
   // Intervention interactive state
   const [viewMode, setViewMode] = useState<'guided' | 'overview'>('guided');
@@ -117,6 +131,10 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     }
 
     if (!isOnline) {
+      if (Capacitor.isNativePlatform()) {
+        handleUseOfflineProtocol('You are offline—using the On-Device NLP Protocol on your phone.');
+        return;
+      }
       setErrorMessage(
         'You appear to be offline. Reconnect for live AI coaching, or start an offline on-device NLP protocol below.',
       );
@@ -124,14 +142,15 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     }
 
     if (Capacitor.isNativePlatform() && !API_BASE) {
-      setErrorMessage(
-        'Live cloud AI coaching is not connected in this APK yet (VITE_API_BASE_URL is not set). You can still run an offline on-device NLP protocol right now.',
+      handleUseOfflineProtocol(
+        'Opened the On-Device NLP Protocol directly on your phone.',
       );
       return;
     }
 
     setIsLoading(true);
     setErrorMessage(null);
+    setOfflineNotice(null);
 
     try {
       const res = await fetch(`${API_BASE}/api/nlp/session`, {
@@ -147,6 +166,12 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
+        if (Capacitor.isNativePlatform()) {
+          handleUseOfflineProtocol(
+            `Cloud backend returned HTTP ${res.status} (non-JSON). Loaded the On-Device NLP Protocol instead so you can continue immediately.`,
+          );
+          return;
+        }
         if (res.status === 404) {
           throw new Error(
             'Backend endpoint returned 404 (not found). Make sure the deployed Cloud Run URL in VITE_API_BASE_URL is live and updated.',
@@ -184,6 +209,12 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
         interventionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
     } catch (err: unknown) {
+      if (Capacitor.isNativePlatform()) {
+        handleUseOfflineProtocol(
+          'Cloud backend could not be reached—loaded the On-Device NLP Protocol so you can practice immediately.',
+        );
+        return;
+      }
       const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
       setErrorMessage(msg);
     } finally {
@@ -191,7 +222,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     }
   };
 
-  const handleUseOfflineProtocol = () => {
+  const handleUseOfflineProtocol = (noticeText?: string) => {
     const trimmed = feelingText.trim();
     if (trimmed.length < 4) {
       setErrorMessage('Please describe how you feel or what challenge is on your mind right now.');
@@ -218,6 +249,9 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     };
 
     setErrorMessage(null);
+    setOfflineNotice(
+      noticeText ?? 'Using On-Device NLP Protocol (runs directly on your phone).',
+    );
     onCreateEntry(newEntry);
     setViewMode('guided');
     window.setTimeout(() => {
@@ -248,18 +282,6 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     const trimmed = followUpInput.trim();
     if (!trimmed) return;
 
-    if (!isOnline) {
-      setFollowUpError('You are offline. Reconnect to continue the live NLP conversation.');
-      return;
-    }
-
-    if (Capacitor.isNativePlatform() && !API_BASE) {
-      setFollowUpError(
-        'Live follow-up coaching requires a deployed backend URL (VITE_API_BASE_URL).',
-      );
-      return;
-    }
-
     const userMsg: FollowUpMessage = {
       id: `msg-u-${Date.now()}`,
       role: 'user',
@@ -271,6 +293,31 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
       ...activeEntry,
       followUps: [...activeEntry.followUps, userMsg],
     };
+
+    if (
+      activeEntry.id.startsWith('nlp-offline-') ||
+      !isOnline ||
+      (Capacitor.isNativePlatform() && !API_BASE)
+    ) {
+      const offlineReply = buildOfflineFollowUpReply(
+        trimmed,
+        activeEntry.response.recommendedTechnique.title,
+      );
+      const assistantMsg: FollowUpMessage = {
+        id: `msg-a-${Date.now()}`,
+        role: 'assistant',
+        content: offlineReply,
+        timestamp: new Date().toISOString(),
+      };
+      onUpdateEntry({
+        ...updatedWithUser,
+        followUps: [...updatedWithUser.followUps, assistantMsg],
+      });
+      setFollowUpInput('');
+      setFollowUpError(null);
+      return;
+    }
+
     onUpdateEntry(updatedWithUser);
     setFollowUpInput('');
     setIsFollowUpLoading(true);
@@ -297,7 +344,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
-        throw new Error('Unable to reach the NLP follow-up service.');
+        throw new Error('Unable to reach the live follow-up service.');
       }
 
       const data = await res.json();
@@ -317,8 +364,25 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
         followUps: [...updatedWithUser.followUps, assistantMsg],
       });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Unable to send follow-up right now.';
-      setFollowUpError(msg);
+      if (Capacitor.isNativePlatform()) {
+        const offlineReply = buildOfflineFollowUpReply(
+          trimmed,
+          activeEntry.response.recommendedTechnique.title,
+        );
+        const assistantMsg: FollowUpMessage = {
+          id: `msg-a-${Date.now()}`,
+          role: 'assistant',
+          content: offlineReply,
+          timestamp: new Date().toISOString(),
+        };
+        onUpdateEntry({
+          ...updatedWithUser,
+          followUps: [...updatedWithUser.followUps, assistantMsg],
+        });
+      } else {
+        const msg = err instanceof Error ? err.message : 'Unable to send follow-up right now.';
+        setFollowUpError(msg);
+      }
     } finally {
       setIsFollowUpLoading(false);
     }
@@ -487,7 +551,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                 {feelingText.trim().length >= 4 && (
                   <button
                     type="button"
-                    onClick={handleUseOfflineProtocol}
+                    onClick={() => handleUseOfflineProtocol()}
                     className="min-h-[44px] px-4 py-2 rounded-xl bg-[#165B52] text-white text-xs sm:text-sm font-medium hover:bg-[#0F463F] transition-colors cursor-pointer"
                   >
                     Start Offline On-Device NLP Protocol
@@ -564,6 +628,11 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
           ref={interventionRef}
           className="mt-8 bg-white border border-[#E2E6E3] rounded-2xl p-5 sm:p-8 lg:p-10 space-y-8"
         >
+          {offlineNotice && activeEntry.id.startsWith('nlp-offline-') && (
+            <div className="rounded-xl border border-[#E2E6E3] bg-[#F7F8F7] px-4 py-2.5 text-xs text-[#4D5C58]">
+              {offlineNotice}
+            </div>
+          )}
           {/* Crisis Safety Banner if Triggered */}
           {activeEntry.response.isCrisisSupportNeeded && (
             <div
