@@ -23,8 +23,11 @@ import type {
   NLPSessionResponse,
   TechniqueId,
 } from '../types/nlp';
+import { Capacitor } from '@capacitor/core';
 import { ResilientImage } from './ResilientImage';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
+
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '');
 
 interface ConsultationStudioProps {
   selectedTechnique: TechniqueId;
@@ -119,11 +122,18 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
       return;
     }
 
+    if (Capacitor.isNativePlatform() && !API_BASE) {
+      setErrorMessage(
+        'This APK does not have a live backend URL connected yet. Deploy your app in AI Studio to get a public URL, add it as the VITE_API_BASE_URL variable in GitHub, and rebuild—or tap "NLP Techniques" below to practice the guided exercises offline right now.',
+      );
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
-      const res = await fetch('/api/nlp/session', {
+      const res = await fetch(`${API_BASE}/api/nlp/session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -133,6 +143,11 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
           contextArea,
         }),
       });
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('NLP guidance service is currently unavailable. Please check your connection or backend URL.');
+      }
 
       const data = await res.json();
       if (!res.ok) {
@@ -191,6 +206,13 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
       return;
     }
 
+    if (Capacitor.isNativePlatform() && !API_BASE) {
+      setFollowUpError(
+        'Live follow-up coaching requires a deployed backend URL (VITE_API_BASE_URL).',
+      );
+      return;
+    }
+
     const userMsg: FollowUpMessage = {
       id: `msg-u-${Date.now()}`,
       role: 'user',
@@ -208,7 +230,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     setFollowUpError(null);
 
     try {
-      const res = await fetch('/api/nlp/followup', {
+      const res = await fetch(`${API_BASE}/api/nlp/followup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -225,6 +247,11 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
           userMessage: trimmed,
         }),
       });
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Unable to reach the NLP follow-up service.');
+      }
 
       const data = await res.json();
       if (!res.ok) {
