@@ -146,7 +146,19 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
       const contentType = res.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
-        throw new Error('NLP guidance service is currently unavailable. Please check your connection or backend URL.');
+        if (res.status === 404) {
+          throw new Error(
+            'Backend endpoint returned 404 (not found). Make sure the deployed Cloud Run URL in VITE_API_BASE_URL is live and updated.',
+          );
+        }
+        if (res.redirected || res.url.includes('accounts.google.com') || res.status === 401 || res.status === 403) {
+          throw new Error(
+            'Backend URL requires Google authentication (use a public Cloud Run Deploy URL rather than a private dev/preview URL).',
+          );
+        }
+        throw new Error(
+          `NLP guidance service returned an unexpected response (HTTP ${res.status}). Check your connection or backend URL.`,
+        );
       }
 
       const data = await res.json();

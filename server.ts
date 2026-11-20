@@ -139,17 +139,9 @@ async function startServer() {
   app.use(express.json({ limit: '1mb' }));
 
   app.use('/api', (req: Request, res: Response, next) => {
-    const origin = req.headers.origin;
-    if (
-      origin === 'https://localhost' ||
-      origin === 'capacitor://localhost' ||
-      origin === 'http://localhost' ||
-      origin?.startsWith('http://localhost:')
-    ) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    }
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     if (req.method === 'OPTIONS') {
       res.sendStatus(204);
       return;
