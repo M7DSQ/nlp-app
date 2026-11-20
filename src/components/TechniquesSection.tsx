@@ -69,8 +69,8 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
         </p>
       </div>
 
-      {/* Interactive Modality Selector */}
-      <div className="mt-7 flex items-center gap-2 overflow-x-auto pb-2 sm:flex-wrap">
+      {/* Interactive Modality Selector — 1 column stacked on phones, wrapped row on larger screens */}
+      <div className="mt-7 grid grid-cols-1 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2">
         {NLP_TECHNIQUES.map((tech, index) => {
           const isActive = tech.id === activeTech.id;
           return (
@@ -78,7 +78,7 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
               key={tech.id}
               type="button"
               onClick={() => setSelectedId(tech.id)}
-              className={`min-h-[44px] px-4 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer border ${
+              className={`w-full sm:w-auto min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-medium text-left sm:text-center transition-colors whitespace-normal sm:whitespace-nowrap cursor-pointer border ${
                 isActive
                   ? 'bg-[#165B52] text-white border-[#165B52]'
                   : 'bg-white text-[#4D5C58] border-[#E2E6E3] hover:text-[#131B19] hover:border-[#C7D0CC]'
@@ -94,8 +94,8 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
       </div>
 
       {/* Selected Technique Detail Panel */}
-      <div className="mt-6 bg-white border border-[#E2E6E3] rounded-2xl p-5 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-7 space-y-4">
+      <div className="mt-6 bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+        <div className="lg:col-span-7 min-w-0 space-y-4">
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#4D5C58]">
             <span className="font-mono text-[#165B52] font-medium tabular-nums">
               {activeTech.duration}
@@ -133,7 +133,7 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
           </div>
         </div>
 
-        <div className="lg:col-span-5 flex flex-col justify-between bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6">
+        <div className="lg:col-span-5 min-w-0 flex flex-col justify-between bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-4 sm:p-6">
           {!isPracticing ? (
             <div>
               <h4 className="text-xs font-semibold text-[#165B52]">

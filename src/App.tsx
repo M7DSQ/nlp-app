@@ -122,11 +122,11 @@ export default function App() {
   };
 
   return (
-    <div id="top" className="min-h-screen flex flex-col bg-[#F7F8F7] text-[#131B19]">
+    <div id="top" className="min-h-screen w-full overflow-x-clip flex flex-col bg-[#F7F8F7] text-[#131B19]">
       <OfflineIndicator />
       <Header onStartCheckIn={focusCheckIn} />
 
-      <main className="flex-1">
+      <main className="flex-1 w-full min-w-0">
         <ConsultationStudio
           selectedTechnique={selectedTechnique}
           onSelectTechnique={setSelectedTechnique}

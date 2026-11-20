@@ -412,7 +412,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
       {/* Hero + Immediate Check-In Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
         {/* Primary Consultation Input Column */}
-        <div className="lg:col-span-7 flex flex-col justify-between bg-white border border-[#E2E6E3] rounded-2xl p-5 sm:p-8">
+        <div className="lg:col-span-7 min-w-0 flex flex-col justify-between bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8">
           <div>
             <p className="text-xs sm:text-sm font-medium text-[#165B52] tracking-normal">
               Neuro-Linguistic Programming for Modern Professionals
@@ -435,7 +435,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                 <div
                   role="tablist"
                   aria-label="Focus category"
-                  className="inline-flex items-center p-1 bg-[#F1F4F2] rounded-xl self-start"
+                  className="grid grid-cols-3 sm:inline-flex items-center p-1 bg-[#F1F4F2] rounded-xl w-full sm:w-auto gap-1 sm:gap-0"
                 >
                   {FOCUS_SECTIONS.map((section) => {
                     const isSectionActive = focusSection === section.key;
@@ -447,7 +447,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                         role="tab"
                         aria-selected={isSectionActive}
                         onClick={() => handleSelectFocusSection(section.key)}
-                        className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                        className={`min-h-[38px] px-1.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-medium text-center transition-colors leading-tight cursor-pointer ${
                           isSectionActive
                             ? isCrisisTab
                               ? 'bg-[#B91C1C] text-white shadow-xs'
@@ -464,7 +464,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {(
                   FOCUS_SECTIONS.find((s) => s.key === focusSection)?.items ??
                   PROFESSIONAL_CONTEXTS
@@ -476,7 +476,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                       key={ctx}
                       type="button"
                       onClick={() => setContextArea(ctx)}
-                      className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer border ${
+                      className={`min-h-[40px] px-3 py-2 rounded-xl text-xs sm:text-sm font-medium text-left transition-colors cursor-pointer border ${
                         active
                           ? isCrisis
                             ? 'bg-[#B91C1C] text-white border-[#B91C1C]'
@@ -509,23 +509,23 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                       </p>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2 pt-0.5">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 pt-0.5">
                     <a
                       href="tel:116123"
-                      className="min-h-[40px] px-3.5 py-2 rounded-lg bg-[#B91C1C] text-white text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[#991B1B] transition-colors whitespace-nowrap"
+                      className="w-full sm:w-auto min-h-[40px] px-3.5 py-2 rounded-lg bg-[#B91C1C] text-white text-xs font-medium inline-flex items-center justify-center gap-1.5 hover:bg-[#991B1B] transition-colors"
                     >
-                      <Phone className="w-3.5 h-3.5" />
+                      <Phone className="w-3.5 h-3.5 shrink-0" />
                       <span>Call Samaritans 116 123 (UK)</span>
                     </a>
                     <a
                       href="tel:999"
-                      className="min-h-[40px] px-3.5 py-2 rounded-lg border border-[#B91C1C]/35 bg-white text-[#991B1B] text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors whitespace-nowrap"
+                      className="w-full sm:w-auto min-h-[40px] px-3.5 py-2 rounded-lg border border-[#B91C1C]/35 bg-white text-[#991B1B] text-xs font-medium inline-flex items-center justify-center gap-1.5 hover:bg-[#FEE2E2] transition-colors"
                     >
                       <span>UK Emergency 999</span>
                     </a>
                     <a
                       href="tel:988"
-                      className="min-h-[40px] px-3.5 py-2 rounded-lg border border-[#B91C1C]/35 bg-white text-[#991B1B] text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors whitespace-nowrap"
+                      className="w-full sm:w-auto min-h-[40px] px-3.5 py-2 rounded-lg border border-[#B91C1C]/35 bg-white text-[#991B1B] text-xs font-medium inline-flex items-center justify-center gap-1.5 hover:bg-[#FEE2E2] transition-colors"
                     >
                       <span>US / Canada 988</span>
                     </a>
@@ -542,13 +542,13 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               <span className="block text-xs font-medium text-[#4D5C58] mb-2">
                 Common moments (tap to prefill or write your own below)
               </span>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:flex-wrap">
+              <div className="flex flex-wrap items-center gap-2">
                 {QUICK_CHECKIN_SCENARIOS.map((sc) => (
                   <button
                     key={sc.label}
                     type="button"
                     onClick={() => handleSelectScenario(sc)}
-                    className="min-h-[40px] px-3 py-1.5 rounded-lg bg-[#F1F4F2] text-xs font-medium text-[#131B19] hover:bg-[#E4EAE6] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    className="min-h-[40px] px-3 py-1.5 rounded-lg bg-[#F1F4F2] text-xs font-medium text-[#131B19] hover:bg-[#E4EAE6] transition-colors text-left cursor-pointer"
                   >
                     {sc.label}
                   </button>
@@ -687,7 +687,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
         </div>
 
         {/* Balanced Editorial Studio Photography Column */}
-        <div className="lg:col-span-5 relative rounded-2xl overflow-hidden border border-[#E2E6E3] min-h-[260px] lg:min-h-0">
+        <div className="lg:col-span-5 min-w-0 relative rounded-2xl overflow-hidden border border-[#E2E6E3] min-h-[260px] lg:min-h-0">
           <ResilientImage
             src="/src/assets/images/hero_therapy_sanctuary_1795195140943.jpg"
             alt="Calm contemporary NLP consultation room with arched window and garden view"
@@ -774,11 +774,11 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               </h2>
             </div>
 
-            <div className="inline-flex items-center p-1 bg-[#F1F4F2] rounded-xl self-start md:self-auto">
+            <div className="w-full md:w-auto grid grid-cols-2 sm:inline-flex items-center p-1 bg-[#F1F4F2] rounded-xl self-start md:self-auto">
               <button
                 type="button"
                 onClick={() => setViewMode('guided')}
-                className={`min-h-[40px] px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`min-h-[40px] px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-center cursor-pointer ${
                   viewMode === 'guided'
                     ? 'bg-white text-[#131B19] shadow-xs'
                     : 'text-[#4D5C58] hover:text-[#131B19]'
@@ -789,7 +789,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               <button
                 type="button"
                 onClick={() => setViewMode('overview')}
-                className={`min-h-[40px] px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                className={`min-h-[40px] px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors text-center cursor-pointer ${
                   viewMode === 'overview'
                     ? 'bg-white text-[#131B19] shadow-xs'
                     : 'text-[#4D5C58] hover:text-[#131B19]'
@@ -802,7 +802,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
           {/* Reflection & Limiting Pattern Analysis */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 space-y-2">
+            <div className="lg:col-span-7 min-w-0 space-y-2">
               <h3 className="text-xs font-semibold tracking-normal text-[#4D5C58]">
                 Practitioner Reflection
               </h3>
@@ -815,7 +815,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               </p>
             </div>
 
-            <div className="lg:col-span-5 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 space-y-2">
+            <div className="lg:col-span-5 min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 space-y-2">
               <p className="text-xs font-medium text-[#165B52]">
                 Observed Cognitive Pattern
               </p>
@@ -978,7 +978,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
           {/* Reframe, Meta-Model Inquiry & Discreet Anchor */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
-            <div className="lg:col-span-6 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6 space-y-3">
+            <div className="lg:col-span-6 min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6 space-y-3">
               <p className="text-xs font-semibold text-[#165B52]">
                 Tailored Cognitive Reframe
               </p>
@@ -995,7 +995,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               </div>
             </div>
 
-            <div className="lg:col-span-6 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6 space-y-3">
+            <div className="lg:col-span-6 min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6 space-y-3">
               <p className="text-xs font-semibold text-[#165B52]">
                 Meta-Model Precision Questions
               </p>

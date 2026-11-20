@@ -22,7 +22,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
     { id: 'consultation', label: 'Check-In', icon: MessageSquareHeart },
     { id: 'techniques', label: 'Techniques', icon: Compass },
     { id: 'journal', label: journalCount > 0 ? `Journal (${journalCount})` : 'Journal', icon: BookOpen },
-    { id: 'about', label: 'Practice', icon: UserCheck },
+    { id: 'about', label: 'About', icon: UserCheck },
   ];
 
   return (
