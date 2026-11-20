@@ -59,10 +59,10 @@ export const Header: React.FC<HeaderProps> = ({ onStartCheckIn }) => {
       </div>
 
       {/* Mobile Android Top App Bar (non-sticky to preserve >=85% scroll viewport) */}
-      <div className="flex md:hidden items-center justify-between gap-3 px-4 h-14">
+      <div className="flex md:hidden items-center justify-between gap-2 px-3.5 h-14 w-full min-w-0">
         <a
           href="#consultation"
-          className="font-serif text-base font-medium tracking-tight text-[#131B19] truncate"
+          className="flex-1 min-w-0 font-serif text-base font-medium tracking-tight text-[#131B19] truncate"
         >
           NLP Therapies Dave Chalton
         </a>

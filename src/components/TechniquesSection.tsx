@@ -5,10 +5,12 @@ import type { TechniqueId } from '../types/nlp';
 
 interface TechniquesSectionProps {
   onApplyTechnique: (techniqueId: TechniqueId) => void;
+  forceSingleColumn?: boolean;
 }
 
 export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
   onApplyTechnique,
+  forceSingleColumn = false,
 }) => {
   const [selectedId, setSelectedId] = useState<string>(NLP_TECHNIQUES[0].id);
   const [practiceStepIdx, setPracticeStepIdx] = useState<number>(0);
@@ -55,7 +57,7 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
   return (
     <section
       id="techniques"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 sm:py-16 border-t border-[#E2E6E3]"
+      className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-10 py-10 sm:py-16 border-t border-[#E2E6E3]"
     >
       <div className="max-w-2xl">
         <p className="text-xs sm:text-sm font-medium text-[#165B52]">
@@ -69,8 +71,12 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
         </p>
       </div>
 
-      {/* Interactive Modality Selector — 1 column stacked on phones, wrapped row on larger screens */}
-      <div className="mt-7 grid grid-cols-1 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2">
+      {/* Interactive Modality Selector — 1 column stacked on phones/APK, wrapped row on web */}
+      <div
+        className={`mt-7 grid grid-cols-1 gap-2 ${
+          forceSingleColumn ? '' : 'sm:flex sm:flex-wrap items-stretch sm:items-center'
+        }`}
+      >
         {NLP_TECHNIQUES.map((tech, index) => {
           const isActive = tech.id === activeTech.id;
           return (
@@ -78,7 +84,9 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
               key={tech.id}
               type="button"
               onClick={() => setSelectedId(tech.id)}
-              className={`w-full sm:w-auto min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-medium text-left sm:text-center transition-colors whitespace-normal sm:whitespace-nowrap cursor-pointer border ${
+              className={`w-full ${
+                forceSingleColumn ? '' : 'sm:w-auto sm:text-center sm:whitespace-nowrap'
+              } min-h-[44px] px-4 py-2.5 rounded-xl text-sm font-medium text-left transition-colors whitespace-normal cursor-pointer border ${
                 isActive
                   ? 'bg-[#165B52] text-white border-[#165B52]'
                   : 'bg-white text-[#4D5C58] border-[#E2E6E3] hover:text-[#131B19] hover:border-[#C7D0CC]'
@@ -94,8 +102,12 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
       </div>
 
       {/* Selected Technique Detail Panel */}
-      <div className="mt-6 bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
-        <div className="lg:col-span-7 min-w-0 space-y-4">
+      <div
+        className={`mt-6 bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8 lg:p-10 grid grid-cols-1 gap-6 sm:gap-8 ${
+          forceSingleColumn ? '' : 'lg:grid-cols-12'
+        }`}
+      >
+        <div className={`${forceSingleColumn ? '' : 'lg:col-span-7'} min-w-0 space-y-4`}>
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#4D5C58]">
             <span className="font-mono text-[#165B52] font-medium tabular-nums">
               {activeTech.duration}
@@ -133,7 +145,7 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
           </div>
         </div>
 
-        <div className="lg:col-span-5 min-w-0 flex flex-col justify-between bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-4 sm:p-6">
+        <div className={`${forceSingleColumn ? '' : 'lg:col-span-5'} min-w-0 flex flex-col justify-between bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-4 sm:p-6`}>
           {!isPracticing ? (
             <div>
               <h4 className="text-xs font-semibold text-[#165B52]">
@@ -193,32 +205,32 @@ export const TechniquesSection: React.FC<TechniquesSectionProps> = ({
                 </button>
               </div>
 
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/15">
+              <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-2 pt-2 border-t border-white/15">
                 <button
                   type="button"
                   disabled={practiceStepIdx === 0}
                   onClick={() => handleStepSelect(practiceStepIdx - 1)}
-                  className="min-h-[44px] px-3 py-1.5 rounded-lg border border-white/20 text-xs font-medium text-white disabled:opacity-40 inline-flex items-center gap-1 cursor-pointer"
+                  className="min-h-[44px] px-3 py-1.5 rounded-lg border border-white/20 text-xs font-medium text-white disabled:opacity-40 inline-flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-3.5 h-3.5 shrink-0" />
                   <span>Back</span>
                 </button>
                 {practiceStepIdx < activeTech.stepsPreview.length - 1 ? (
                   <button
                     type="button"
                     onClick={() => handleStepSelect(practiceStepIdx + 1)}
-                    className="min-h-[44px] px-3.5 py-1.5 rounded-lg bg-[#9CC7BF] text-[#131B19] text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                    className="min-h-[44px] px-3.5 py-1.5 rounded-lg bg-[#9CC7BF] text-[#131B19] text-xs font-semibold inline-flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <span>Next Step</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <ChevronRight className="w-3.5 h-3.5 shrink-0" />
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={() => setPracticeCompleted(true)}
-                    className="min-h-[44px] px-3.5 py-1.5 rounded-lg bg-[#9CC7BF] text-[#131B19] text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                    className="min-h-[44px] px-3.5 py-1.5 rounded-lg bg-[#9CC7BF] text-[#131B19] text-xs font-semibold inline-flex items-center justify-center gap-1 cursor-pointer"
                   >
-                    <Check className="w-3.5 h-3.5" />
+                    <Check className="w-3.5 h-3.5 shrink-0" />
                     <span>Finish</span>
                   </button>
                 )}

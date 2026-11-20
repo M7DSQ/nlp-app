@@ -61,7 +61,7 @@ export const SessionJournal: React.FC<SessionJournalProps> = ({
   return (
     <section
       id="journal"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 sm:py-16 border-t border-[#E2E6E3]"
+      className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-10 py-10 sm:py-16 border-t border-[#E2E6E3]"
     >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -191,11 +191,11 @@ export const SessionJournal: React.FC<SessionJournalProps> = ({
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
                         <button
                           type="button"
                           onClick={() => onOpenEntry(entry)}
-                          className="min-h-[44px] px-4 py-2 rounded-xl border border-[#D4DBD7] bg-white text-xs sm:text-sm font-medium text-[#131B19] hover:bg-[#F1F4F2] transition-colors cursor-pointer whitespace-nowrap"
+                          className="min-h-[44px] px-4 py-2 rounded-xl border border-[#D4DBD7] bg-white text-xs sm:text-sm font-medium text-[#131B19] hover:bg-[#F1F4F2] transition-colors cursor-pointer"
                         >
                           {isCurrent ? 'Viewing Now' : 'Reopen'}
                         </button>

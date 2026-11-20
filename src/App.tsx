@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { AboutSection } from './components/AboutSection';
 import { ConsultationStudio } from './components/ConsultationStudio';
 import { Header } from './components/Header';
@@ -25,6 +26,7 @@ function loadSavedEntries(): JournalEntry[] {
 }
 
 export default function App() {
+  const isNativeApk = Capacitor.isNativePlatform();
   const [entries, setEntries] = useState<JournalEntry[]>(() => loadSavedEntries());
   const [activeEntryId, setActiveEntryId] = useState<string | null>(null);
   const [selectedTechnique, setSelectedTechnique] = useState<TechniqueId>('auto');
@@ -134,11 +136,15 @@ export default function App() {
           onCreateEntry={handleCreateEntry}
           onUpdateEntry={handleUpdateEntry}
           textareaRef={textareaRef}
+          forceSingleColumn={isNativeApk}
         />
 
-        <TechniquesSection onApplyTechnique={handleApplyTechnique} />
+        <TechniquesSection
+          onApplyTechnique={handleApplyTechnique}
+          forceSingleColumn={isNativeApk}
+        />
 
-        <AboutSection />
+        <AboutSection forceSingleColumn={isNativeApk} />
 
         <SessionJournal
           entries={entries}
@@ -150,7 +156,7 @@ export default function App() {
         />
       </main>
 
-      <footer className="border-t border-[#E2E6E3] bg-white pb-24 md:pb-10 pt-10 px-4 sm:px-6 lg:px-10">
+      <footer className="border-t border-[#E2E6E3] bg-white pb-24 md:pb-10 pt-10 px-3.5 sm:px-6 lg:px-10">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-1">
             <p className="font-serif text-lg font-medium text-[#131B19]">
@@ -161,7 +167,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6 text-xs font-medium text-[#4D5C58]">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs font-medium text-[#4D5C58]">
             <a href="#consultation" className="hover:text-[#131B19] whitespace-nowrap">
               Check-In
             </a>

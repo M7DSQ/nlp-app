@@ -53,6 +53,7 @@ interface ConsultationStudioProps {
   onCreateEntry: (entry: JournalEntry) => void;
   onUpdateEntry: (entry: JournalEntry) => void;
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  forceSingleColumn?: boolean;
 }
 
 const INTENSITY_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const;
@@ -64,6 +65,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
   onCreateEntry,
   onUpdateEntry,
   textareaRef,
+  forceSingleColumn = false,
 }) => {
   const isOnline = useOnlineStatus();
   const [focusSection, setFocusSection] = useState<FocusSectionKey>('professional');
@@ -408,11 +410,11 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
   const currentStep = activeSteps[currentStepIdx];
 
   return (
-    <section id="consultation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-6 sm:pt-10 pb-14">
+    <section id="consultation" className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-10 pt-5 sm:pt-10 pb-12 sm:pb-14">
       {/* Hero + Immediate Check-In Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+      <div className={`grid grid-cols-1 gap-6 lg:gap-8 items-stretch ${forceSingleColumn ? '' : 'lg:grid-cols-12'}`}>
         {/* Primary Consultation Input Column */}
-        <div className="lg:col-span-7 min-w-0 flex flex-col justify-between bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8">
+        <div className={`${forceSingleColumn ? '' : 'lg:col-span-7'} min-w-0 flex flex-col justify-between bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8`}>
           <div>
             <p className="text-xs sm:text-sm font-medium text-[#165B52] tracking-normal">
               Neuro-Linguistic Programming for Modern Professionals
@@ -579,8 +581,8 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
             </div>
 
             {/* SUDS Intensity Scale + Preferred Technique */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-              <div className="md:col-span-7">
+            <div className={`grid grid-cols-1 gap-5 items-start ${forceSingleColumn ? '' : 'md:grid-cols-12'}`}>
+              <div className={`${forceSingleColumn ? '' : 'md:col-span-7'} min-w-0`}>
                 <div className="flex items-baseline justify-between gap-2 mb-2">
                   <span className="text-sm font-medium text-[#131B19]">
                     Current distress or tension level
@@ -617,7 +619,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                 </div>
               </div>
 
-              <div className="md:col-span-5">
+              <div className={`${forceSingleColumn ? '' : 'md:col-span-5'} min-w-0`}>
                 <label
                   htmlFor="nlp-technique-select"
                   className="block text-sm font-medium text-[#131B19] mb-2"
@@ -665,17 +667,17 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-[#165B52] text-white text-sm font-semibold hover:bg-[#0F463F] disabled:opacity-65 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
+                className="w-full sm:w-auto min-h-[48px] px-5 py-3 rounded-xl bg-[#165B52] text-white text-sm font-semibold hover:bg-[#0F463F] disabled:opacity-65 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer text-center"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                     <span>Preparing NLP Guidance...</span>
                   </>
                 ) : (
                   <>
                     <span>Receive NLP Guidance</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 shrink-0" />
                   </>
                 )}
               </button>
@@ -687,7 +689,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
         </div>
 
         {/* Balanced Editorial Studio Photography Column */}
-        <div className="lg:col-span-5 min-w-0 relative rounded-2xl overflow-hidden border border-[#E2E6E3] min-h-[260px] lg:min-h-0">
+        <div className={`${forceSingleColumn ? '' : 'lg:col-span-5'} min-w-0 relative rounded-2xl overflow-hidden border border-[#E2E6E3] min-h-[240px] lg:min-h-0`}>
           <ResilientImage
             src="/src/assets/images/hero_therapy_sanctuary_1795195140943.jpg"
             alt="Calm contemporary NLP consultation room with arched window and garden view"
@@ -727,7 +729,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
       {activeEntry && !isLoading && (
         <div
           ref={interventionRef}
-          className="mt-8 bg-white border border-[#E2E6E3] rounded-2xl p-5 sm:p-8 lg:p-10 space-y-8"
+          className="mt-8 bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8 lg:p-10 space-y-7 sm:space-y-8"
         >
           {offlineNotice && activeEntry.id.startsWith('nlp-offline-') && (
             <div className="rounded-xl border border-[#E2E6E3] bg-[#F7F8F7] px-4 py-2.5 text-xs text-[#4D5C58]">
@@ -801,8 +803,8 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
           </div>
 
           {/* Reflection & Limiting Pattern Analysis */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 min-w-0 space-y-2">
+          <div className={`grid grid-cols-1 gap-6 ${forceSingleColumn ? '' : 'lg:grid-cols-12'}`}>
+            <div className={`${forceSingleColumn ? '' : 'lg:col-span-7'} min-w-0 space-y-2`}>
               <h3 className="text-xs font-semibold tracking-normal text-[#4D5C58]">
                 Practitioner Reflection
               </h3>
@@ -815,7 +817,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               </p>
             </div>
 
-            <div className="lg:col-span-5 min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 space-y-2">
+            <div className={`${forceSingleColumn ? '' : 'lg:col-span-5'} min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-4 sm:p-5 space-y-2`}>
               <p className="text-xs font-medium text-[#165B52]">
                 Observed Cognitive Pattern
               </p>
@@ -830,7 +832,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
 
           {/* Guided Walkthrough OR Full Protocol List */}
           {viewMode === 'guided' && currentStep ? (
-            <div className="bg-[#142420] text-[#F7F8F7] rounded-2xl p-5 sm:p-8 space-y-6">
+            <div className="bg-[#142420] text-[#F7F8F7] rounded-2xl p-4 sm:p-8 space-y-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-[#9CC7BF] tabular-nums">
@@ -876,21 +878,21 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               </div>
 
               {/* Pause / Breath Timer & Navigation */}
-              <div className="pt-4 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-2.5">
+              <div className="pt-4 border-t border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
                     type="button"
                     onClick={() => setIsTimerRunning((r) => !r)}
-                    className="min-h-[44px] px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
+                    className="flex-1 sm:flex-none min-h-[44px] px-3.5 sm:px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
                   >
                     {isTimerRunning ? (
                       <>
-                        <Pause className="w-4 h-4" />
+                        <Pause className="w-4 h-4 shrink-0" />
                         <span>Pause</span>
                       </>
                     ) : (
                       <>
-                        <Play className="w-4 h-4" />
+                        <Play className="w-4 h-4 shrink-0" />
                         <span>Timed Pause</span>
                       </>
                     )}
@@ -906,20 +908,20 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                       setTimerSecondsLeft(currentStep.breathSeconds);
                     }}
                     aria-label="Reset pause timer"
-                    className="min-h-[44px] min-w-[44px] rounded-xl bg-white/5 hover:bg-white/15 text-white/80 flex items-center justify-center transition-colors cursor-pointer"
+                    className="min-h-[44px] min-w-[44px] rounded-xl bg-white/5 hover:bg-white/15 text-white/80 flex items-center justify-center transition-colors cursor-pointer shrink-0"
                   >
                     <RotateCcw className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2.5">
+                <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
                   <button
                     type="button"
                     disabled={currentStepIdx === 0}
                     onClick={() => handleStepChange(currentStepIdx - 1)}
-                    className="min-h-[44px] px-4 py-2 rounded-xl border border-white/20 text-white text-sm font-medium disabled:opacity-40 hover:bg-white/10 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                    className="min-h-[44px] px-3 sm:px-4 py-2 rounded-xl border border-white/20 text-white text-xs sm:text-sm font-medium disabled:opacity-40 hover:bg-white/10 transition-colors inline-flex items-center justify-center gap-1 cursor-pointer"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-4 h-4 shrink-0" />
                     <span>Previous</span>
                   </button>
 
@@ -927,19 +929,19 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                     <button
                       type="button"
                       onClick={() => handleStepChange(currentStepIdx + 1)}
-                      className="min-h-[44px] px-5 py-2 rounded-xl bg-[#9CC7BF] text-[#131B19] text-sm font-semibold hover:bg-[#B4DAD3] transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                      className="min-h-[44px] px-3 sm:px-5 py-2 rounded-xl bg-[#9CC7BF] text-[#131B19] text-xs sm:text-sm font-semibold hover:bg-[#B4DAD3] transition-colors inline-flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <span>Next Step</span>
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-4 h-4 shrink-0" />
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={() => setCompletedWalkthrough(true)}
-                      className="min-h-[44px] px-5 py-2 rounded-xl bg-[#9CC7BF] text-[#131B19] text-sm font-semibold hover:bg-[#B4DAD3] transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                      className="min-h-[44px] px-3 sm:px-5 py-2 rounded-xl bg-[#9CC7BF] text-[#131B19] text-xs sm:text-sm font-semibold hover:bg-[#B4DAD3] transition-colors inline-flex items-center justify-center gap-1 cursor-pointer"
                     >
-                      <Check className="w-4 h-4" />
-                      <span>Complete Exercise</span>
+                      <Check className="w-4 h-4 shrink-0" />
+                      <span>Complete</span>
                     </button>
                   )}
                 </div>
@@ -953,7 +955,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               <ol className="divide-y divide-[#E2E6E3] border border-[#E2E6E3] rounded-xl">
                 {activeSteps.map((step) => (
                   <li key={step.stepNumber} className="p-4 sm:p-5 space-y-1.5">
-                    <div className="flex items-baseline justify-between gap-4">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <h4 className="font-medium text-[#131B19]">
                         <span className="font-mono text-xs text-[#165B52] mr-2 tabular-nums">
                           0{step.stepNumber}.
@@ -977,8 +979,8 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
           )}
 
           {/* Reframe, Meta-Model Inquiry & Discreet Anchor */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
-            <div className="lg:col-span-6 min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6 space-y-3">
+          <div className={`grid grid-cols-1 gap-6 pt-2 ${forceSingleColumn ? '' : 'lg:grid-cols-12'}`}>
+            <div className={`${forceSingleColumn ? '' : 'lg:col-span-6'} min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-4 sm:p-6 space-y-3`}>
               <p className="text-xs font-semibold text-[#165B52]">
                 Tailored Cognitive Reframe
               </p>
@@ -995,7 +997,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
               </div>
             </div>
 
-            <div className="lg:col-span-6 min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-5 sm:p-6 space-y-3">
+            <div className={`${forceSingleColumn ? '' : 'lg:col-span-6'} min-w-0 bg-[#F7F8F7] border border-[#E2E6E3] rounded-xl p-4 sm:p-6 space-y-3`}>
               <p className="text-xs font-semibold text-[#165B52]">
                 Meta-Model Precision Questions
               </p>
@@ -1076,8 +1078,8 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                     key={msg.id}
                     className={`rounded-xl p-4 text-sm leading-relaxed ${
                       msg.role === 'user'
-                        ? 'bg-[#EAEFEA] text-[#131B19] ml-4 sm:ml-12'
-                        : 'bg-[#F7F8F7] border border-[#E2E6E3] text-[#131B19] mr-4 sm:mr-12'
+                        ? 'bg-[#EAEFEA] text-[#131B19] ml-2 sm:ml-12'
+                        : 'bg-[#F7F8F7] border border-[#E2E6E3] text-[#131B19] mr-2 sm:mr-12'
                     }`}
                   >
                     <p className="text-xs font-medium text-[#4D5C58] mb-1">
@@ -1099,17 +1101,17 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                 value={followUpInput}
                 onChange={(e) => setFollowUpInput(e.target.value)}
                 placeholder="Ask a follow-up (e.g., 'I still feel anxious in my stomach—what submodality should I shift?')"
-                className="flex-1 min-h-[44px] rounded-xl border border-[#D4DBD7] bg-[#F7F8F7]/60 px-4 py-2 text-sm text-[#131B19] placeholder:text-[#788782] focus:bg-white focus:border-[#165B52] focus:outline-none"
+                className="flex-1 min-w-0 min-h-[44px] rounded-xl border border-[#D4DBD7] bg-[#F7F8F7]/60 px-4 py-2 text-sm text-[#131B19] placeholder:text-[#788782] focus:bg-white focus:border-[#165B52] focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={isFollowUpLoading || !followUpInput.trim()}
-                className="min-h-[44px] px-5 py-2 rounded-xl bg-[#131B19] text-white text-sm font-medium hover:bg-[#273430] disabled:opacity-50 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
+                className="w-full sm:w-auto min-h-[44px] px-5 py-2 rounded-xl bg-[#131B19] text-white text-sm font-medium hover:bg-[#273430] disabled:opacity-50 transition-colors inline-flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isFollowUpLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" />
                 ) : (
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 shrink-0" />
                 )}
                 <span>Ask Guide</span>
               </button>

@@ -1,14 +1,23 @@
 import React from 'react';
+import { Capacitor } from '@capacitor/core';
 import { ResilientImage } from './ResilientImage';
 import { PWAInstallButton } from './PWAInstallButton';
 
-export const AboutSection: React.FC = () => {
+interface AboutSectionProps {
+  forceSingleColumn?: boolean;
+}
+
+export const AboutSection: React.FC<AboutSectionProps> = ({
+  forceSingleColumn = false,
+}) => {
+  const isNativeApk = Capacitor.isNativePlatform();
+
   return (
     <section
       id="about"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-12 sm:py-16 border-t border-[#E2E6E3]"
+      className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-10 py-10 sm:py-16 border-t border-[#E2E6E3]"
     >
-      <div className="bg-white border border-[#E2E6E3] rounded-2xl p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-6">
+      <div className="bg-white border border-[#E2E6E3] rounded-2xl p-4 sm:p-8 lg:p-10 flex flex-col justify-between gap-6">
         <div className="space-y-4">
           <p className="text-xs sm:text-sm font-medium text-[#165B52]">
             About Dave Chalton
@@ -24,9 +33,17 @@ export const AboutSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Android App Install & Mindful Visual */}
-        <div className="pt-6 border-t border-[#E2E6E3] grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
-          <div className="sm:col-span-5 min-w-0 rounded-xl overflow-hidden border border-[#E2E6E3] h-40">
+        {/* Android App Companion & Mindful Visual */}
+        <div
+          className={`pt-6 border-t border-[#E2E6E3] grid grid-cols-1 gap-6 items-center ${
+            forceSingleColumn ? '' : 'sm:grid-cols-12'
+          }`}
+        >
+          <div
+            className={`${
+              forceSingleColumn ? '' : 'sm:col-span-5'
+            } min-w-0 rounded-xl overflow-hidden border border-[#E2E6E3] h-40`}
+          >
             <ResilientImage
               src="/src/assets/images/nlp_mindful_still_life_1795195140689.jpg"
               alt="Therapy journal, fountain pen, and river stones on an oak table"
@@ -36,16 +53,33 @@ export const AboutSection: React.FC = () => {
             />
           </div>
 
-          <div className="sm:col-span-7 min-w-0 space-y-3">
-            <h3 className="font-serif text-xl font-medium text-[#131B19]">
-              Keep it on your Android home screen
-            </h3>
-            <p className="text-sm text-[#4D5C58] leading-relaxed">
-              Install NLP Therapies Dave Chalton as a standalone mobile app for instant thumb-friendly access, offline journal review, and quiet guided resets anywhere.
-            </p>
-            <div className="pt-1">
-              <PWAInstallButton variant="primary" label="Install Android App" />
-            </div>
+          <div
+            className={`${
+              forceSingleColumn ? '' : 'sm:col-span-7'
+            } min-w-0 space-y-3`}
+          >
+            {isNativeApk ? (
+              <>
+                <h3 className="font-serif text-xl font-medium text-[#131B19]">
+                  Always ready on your Android phone
+                </h3>
+                <p className="text-sm text-[#4D5C58] leading-relaxed">
+                  You have full offline access to your guided NLP protocols, practice timers, and private Session Journal wherever your day takes you.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="font-serif text-xl font-medium text-[#131B19]">
+                  Keep it on your Android home screen
+                </h3>
+                <p className="text-sm text-[#4D5C58] leading-relaxed">
+                  Install NLP Therapies Dave Chalton as a standalone mobile app for instant thumb-friendly access, offline journal review, and quiet guided resets anywhere.
+                </p>
+                <div className="pt-1">
+                  <PWAInstallButton variant="primary" label="Install Android App" />
+                </div>
+              </>
+            )}
           </div>
         </div>
 
