@@ -14,20 +14,63 @@ export function buildOfflineNlpProtocol({
   contextArea,
 }: OfflineInput): NLPSessionResponse {
   const lower = feelingText.toLowerCase();
+  const isCrisisKeywords =
+    lower.includes('suicid') ||
+    lower.includes('kill myself') ||
+    lower.includes('end my life') ||
+    lower.includes('self-harm') ||
+    lower.includes('hurt myself') ||
+    lower.includes('not safe') ||
+    contextArea === 'Immediate Crisis Grounding';
+
+  const isCrisisContext =
+    isCrisisKeywords || contextArea === 'Acute Panic or Overwhelm';
 
   let chosenId: Exclude<TechniqueId, 'auto'> =
     preferredTechnique === 'auto' ? 'submodalities' : preferredTechnique;
 
   if (preferredTechnique === 'auto') {
-    if (lower.includes('conflict') || lower.includes('colleague') || lower.includes('manager') || lower.includes('client') || lower.includes('email')) {
+    if (isCrisisContext) {
+      chosenId = 'submodalities';
+    } else if (
+      lower.includes('conflict') ||
+      lower.includes('colleague') ||
+      lower.includes('manager') ||
+      lower.includes('client') ||
+      lower.includes('email') ||
+      lower.includes('relationship') ||
+      lower.includes('family') ||
+      lower.includes('partner') ||
+      contextArea === 'Relationships & Family'
+    ) {
       chosenId = 'perceptual';
-    } else if (lower.includes('always') || lower.includes('never') || lower.includes('everyone') || lower.includes('imposter') || lower.includes('doubt')) {
+    } else if (
+      lower.includes('always') ||
+      lower.includes('never') ||
+      lower.includes('everyone') ||
+      lower.includes('imposter') ||
+      lower.includes('doubt') ||
+      contextArea === 'Self-Worth & Inner Critic'
+    ) {
       chosenId = 'metamodel';
-    } else if (lower.includes('procrastinat') || lower.includes('habit') || lower.includes('loop') || lower.includes('switch off') || lower.includes('sleep')) {
+    } else if (
+      lower.includes('procrastinat') ||
+      lower.includes('habit') ||
+      lower.includes('loop') ||
+      lower.includes('switch off') ||
+      lower.includes('sleep') ||
+      contextArea === 'Health, Sleep & Unwinding' ||
+      contextArea === 'Personal Habits & Boundaries'
+    ) {
       chosenId = 'swish';
-    } else if (lower.includes('confidence') || lower.includes('presentation') || lower.includes('meeting') || lower.includes('speaking')) {
+    } else if (
+      lower.includes('confidence') ||
+      lower.includes('presentation') ||
+      lower.includes('meeting') ||
+      lower.includes('speaking')
+    ) {
       chosenId = 'anchoring';
-    } else if (intensityBefore >= 7) {
+    } else if (intensityBefore >= 7 || contextArea === 'Life Transitions & Grief') {
       chosenId = 'submodalities';
     } else {
       chosenId = 'reframing';
@@ -363,7 +406,7 @@ export function buildOfflineNlpProtocol({
   const chosen = protocols[chosenId];
 
   return {
-    isCrisisSupportNeeded: false,
+    isCrisisSupportNeeded: isCrisisKeywords,
     stateReflection: `You shared that within ${contextArea}, you are currently experiencing this at ${intensityBefore}/10 intensity. ${intensityTone}`,
     ...chosen,
   };

@@ -1,16 +1,51 @@
 import type { NLPTechniqueInfo } from '../types/nlp';
 
-export const PROFESSIONAL_CONTEXTS = [
-  'Leadership & Speaking',
-  'Focus & Burnout',
-  'Confidence & Imposter Doubt',
-  'Stakeholder Conflict',
-  'Switching Off & Sleep',
-  'Decision Paralysis',
+export type FocusSectionKey = 'professional' | 'personal' | 'crisis';
+
+export interface FocusSection {
+  key: FocusSectionKey;
+  label: string;
+  items: readonly string[];
+}
+
+export const FOCUS_SECTIONS: readonly FocusSection[] = [
+  {
+    key: 'professional',
+    label: 'Professional',
+    items: [
+      'Leadership & Speaking',
+      'Focus & Burnout',
+      'Confidence & Imposter Doubt',
+      'Stakeholder Conflict',
+      'Decision Paralysis',
+    ],
+  },
+  {
+    key: 'personal',
+    label: 'Personal Areas',
+    items: [
+      'Relationships & Family',
+      'Health, Sleep & Unwinding',
+      'Self-Worth & Inner Critic',
+      'Life Transitions & Grief',
+      'Personal Habits & Boundaries',
+    ],
+  },
+  {
+    key: 'crisis',
+    label: 'Crisis Support',
+    items: [
+      'Acute Panic or Overwhelm',
+      'Immediate Crisis Grounding',
+    ],
+  },
 ] as const;
+
+export const PROFESSIONAL_CONTEXTS = FOCUS_SECTIONS[0].items;
 
 export interface QuickCheckInScenario {
   label: string;
+  sectionKey: FocusSectionKey;
   contextArea: string;
   defaultIntensity: number;
   prompt: string;
@@ -19,6 +54,7 @@ export interface QuickCheckInScenario {
 export const QUICK_CHECKIN_SCENARIOS: QuickCheckInScenario[] = [
   {
     label: 'Pre-meeting anxiety',
+    sectionKey: 'professional',
     contextArea: 'Leadership & Speaking',
     defaultIntensity: 7,
     prompt:
@@ -26,24 +62,35 @@ export const QUICK_CHECKIN_SCENARIOS: QuickCheckInScenario[] = [
   },
   {
     label: 'Mental overload',
+    sectionKey: 'professional',
     contextArea: 'Focus & Burnout',
     defaultIntensity: 8,
     prompt:
       'My mind is racing across ten unfinished priorities at once. I feel overwhelmed, behind on everything, and unable to settle on a single task.',
   },
   {
-    label: 'Imposter self-doubt',
-    contextArea: 'Confidence & Imposter Doubt',
+    label: 'Relationship tension',
+    sectionKey: 'personal',
+    contextArea: 'Relationships & Family',
     defaultIntensity: 7,
     prompt:
-      'Since stepping into a more senior role, an inner critical voice keeps telling me I am out of my depth and someone will realize I do not belong here.',
+      'I had a difficult conversation at home and keep replaying what was said, feeling tense, misunderstood, and unable to settle.',
   },
   {
-    label: 'Switching off after work',
-    contextArea: 'Switching Off & Sleep',
+    label: 'Unable to switch off',
+    sectionKey: 'personal',
+    contextArea: 'Health, Sleep & Unwinding',
     defaultIntensity: 6,
     prompt:
-      'Even though my workday ended hours ago, I keep replaying a tense email thread in my head and cannot unwind or switch off for the evening.',
+      'My body feels exhausted, yet my mind keeps spinning over personal worries and responsibilities so I cannot unwind or sleep.',
+  },
+  {
+    label: 'Sudden panic surge',
+    sectionKey: 'crisis',
+    contextArea: 'Acute Panic or Overwhelm',
+    defaultIntensity: 9,
+    prompt:
+      'My heart is racing, my breathing feels shallow, and everything feels too loud and overwhelming right now. I need help grounding quickly.',
   },
 ];
 

@@ -7,12 +7,15 @@ import {
   ChevronRight,
   Loader2,
   Pause,
+  Phone,
   Play,
   RotateCcw,
   Send,
   ShieldAlert,
 } from 'lucide-react';
 import {
+  FOCUS_SECTIONS,
+  type FocusSectionKey,
   NLP_TECHNIQUES,
   PROFESSIONAL_CONTEXTS,
   QUICK_CHECKIN_SCENARIOS,
@@ -63,6 +66,7 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
   textareaRef,
 }) => {
   const isOnline = useOnlineStatus();
+  const [focusSection, setFocusSection] = useState<FocusSectionKey>('professional');
   const [contextArea, setContextArea] = useState<string>(PROFESSIONAL_CONTEXTS[0]);
   const [feelingText, setFeelingText] = useState<string>('');
   const [intensityBefore, setIntensityBefore] = useState<number>(7);
@@ -114,7 +118,19 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
     return () => window.clearInterval(id);
   }, [isTimerRunning, timerSecondsLeft]);
 
+  const handleSelectFocusSection = (sectionKey: FocusSectionKey) => {
+    setFocusSection(sectionKey);
+    const section = FOCUS_SECTIONS.find((s) => s.key === sectionKey);
+    if (section && section.items.length > 0) {
+      setContextArea(section.items[0]);
+    }
+    if (sectionKey === 'crisis') {
+      setIntensityBefore((prev) => (prev < 8 ? 9 : prev));
+    }
+  };
+
   const handleSelectScenario = (scenario: (typeof QUICK_CHECKIN_SCENARIOS)[number]) => {
+    setFocusSection(scenario.sectionKey);
     setContextArea(scenario.contextArea);
     setFeelingText(scenario.prompt);
     setIntensityBefore(scenario.defaultIntensity);
@@ -410,14 +426,51 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
           </div>
 
           <form onSubmit={handleSubmitCheckIn} className="mt-6 space-y-5">
-            {/* Context Selector */}
-            <div>
-              <label className="block text-xs font-medium text-[#4D5C58] mb-2">
-                Area of focus
-              </label>
+            {/* Area of Focus: Professional, Personal Areas, and Crisis Support */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <label className="block text-xs font-medium text-[#4D5C58]">
+                  Area of focus
+                </label>
+                <div
+                  role="tablist"
+                  aria-label="Focus category"
+                  className="inline-flex items-center p-1 bg-[#F1F4F2] rounded-xl self-start"
+                >
+                  {FOCUS_SECTIONS.map((section) => {
+                    const isSectionActive = focusSection === section.key;
+                    const isCrisisTab = section.key === 'crisis';
+                    return (
+                      <button
+                        key={section.key}
+                        type="button"
+                        role="tab"
+                        aria-selected={isSectionActive}
+                        onClick={() => handleSelectFocusSection(section.key)}
+                        className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                          isSectionActive
+                            ? isCrisisTab
+                              ? 'bg-[#B91C1C] text-white shadow-xs'
+                              : 'bg-white text-[#131B19] shadow-xs'
+                            : isCrisisTab
+                              ? 'text-[#991B1B] hover:text-[#7F1D1D]'
+                              : 'text-[#4D5C58] hover:text-[#131B19]'
+                        }`}
+                      >
+                        {section.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
-                {PROFESSIONAL_CONTEXTS.map((ctx) => {
+                {(
+                  FOCUS_SECTIONS.find((s) => s.key === focusSection)?.items ??
+                  PROFESSIONAL_CONTEXTS
+                ).map((ctx) => {
                   const active = contextArea === ctx;
+                  const isCrisis = focusSection === 'crisis';
                   return (
                     <button
                       key={ctx}
@@ -425,8 +478,12 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                       onClick={() => setContextArea(ctx)}
                       className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer border ${
                         active
-                          ? 'bg-[#165B52] text-white border-[#165B52]'
-                          : 'bg-[#F7F8F7] text-[#4D5C58] border-[#E2E6E3] hover:text-[#131B19] hover:border-[#C7D0CC]'
+                          ? isCrisis
+                            ? 'bg-[#B91C1C] text-white border-[#B91C1C]'
+                            : 'bg-[#165B52] text-white border-[#165B52]'
+                          : isCrisis
+                            ? 'bg-[#FEF2F2] text-[#7F1D1D] border-[#FECACA] hover:border-[#B91C1C]/60'
+                            : 'bg-[#F7F8F7] text-[#4D5C58] border-[#E2E6E3] hover:text-[#131B19] hover:border-[#C7D0CC]'
                       }`}
                     >
                       {ctx}
@@ -434,6 +491,50 @@ export const ConsultationStudio: React.FC<ConsultationStudioProps> = ({
                   );
                 })}
               </div>
+
+              {focusSection === 'crisis' && (
+                <div
+                  role="region"
+                  aria-label="Immediate crisis support helplines"
+                  className="rounded-xl border border-[#B91C1C]/30 bg-[#FEF2F2] p-4 space-y-2.5 text-sm text-[#7F1D1D]"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-[#B91C1C]" />
+                    <div className="space-y-1">
+                      <p className="font-semibold text-[#991B1B]">
+                        Need immediate human support right now?
+                      </p>
+                      <p className="text-xs leading-relaxed text-[#7F1D1D]">
+                        If you are in danger, feeling unable to stay safe, or experiencing a severe crisis, please contact free 24/7 support directly rather than relying solely on an app:
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-0.5">
+                    <a
+                      href="tel:116123"
+                      className="min-h-[40px] px-3.5 py-2 rounded-lg bg-[#B91C1C] text-white text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[#991B1B] transition-colors whitespace-nowrap"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Call Samaritans 116 123 (UK)</span>
+                    </a>
+                    <a
+                      href="tel:999"
+                      className="min-h-[40px] px-3.5 py-2 rounded-lg border border-[#B91C1C]/35 bg-white text-[#991B1B] text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors whitespace-nowrap"
+                    >
+                      <span>UK Emergency 999</span>
+                    </a>
+                    <a
+                      href="tel:988"
+                      className="min-h-[40px] px-3.5 py-2 rounded-lg border border-[#B91C1C]/35 bg-white text-[#991B1B] text-xs font-medium inline-flex items-center gap-1.5 hover:bg-[#FEE2E2] transition-colors whitespace-nowrap"
+                    >
+                      <span>US / Canada 988</span>
+                    </a>
+                    <span className="inline-flex items-center text-xs text-[#7F1D1D] px-1">
+                      Text SHOUT to 85258 (UK) · NHS 111
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick-start scenarios for busy professionals */}
