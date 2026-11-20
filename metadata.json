@@ -1,0 +1,8 @@
+{
+  "name": "NLP Therapies Dave Chalton",
+  "description": "Guided Neuro-Linguistic Programming therapy and reframing studio by Dave Chalton for real-time emotional state shifts and practical relief.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

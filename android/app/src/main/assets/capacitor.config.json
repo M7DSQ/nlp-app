@@ -1,0 +1,13 @@
+{
+	"appId": "uk.nlptherapies.davechalton",
+	"appName": "NLP Therapies Dave Chalton",
+	"webDir": "dist",
+	"backgroundColor": "#F7F8F7",
+	"android": {
+		"backgroundColor": "#F7F8F7"
+	},
+	"server": {
+		"url": "https://ais-pre-tfyd6uw46ik6ing4sagju4-120834169464.europe-west2.run.app",
+		"androidScheme": "https"
+	}
+}
